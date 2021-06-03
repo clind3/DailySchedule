@@ -1,16 +1,16 @@
 
 var ul = $('#timestamps');
-// GIVEN I am using a daily planner to create a schedule
-// WHEN I open the planner
-// THEN the current day is displayed at the top of the calendar
+var scheduleItemsToSave = [];
 var todaysDateHeader = moment(); //calls out to the moment method to calculate and format dates/times
 $("#currentDay").text(todaysDateHeader.format("LLLL"));
 // console.log(todaysDateHeader);
 
-// WHEN I scroll down
-// THEN I am presented with timeblocks for standard business hours
-var hours = [9, 10, 11, 12, 1, 2, 3, 4, 5, 6];
+var hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 var periods = ['AM', 'PM'];
+var savedSchedule = JSON.parse(localStorage.getItem('hour'));
+// console.log(savedSchedule);
+
+//create hour schedule list
 for (let i = 0; i < hours.length; i++) {
     var li = $('<li>');
     li.css('display', 'flex');
@@ -22,45 +22,63 @@ for (let i = 0; i < hours.length; i++) {
 
     var textInput = $('<input>');
     textInput.css('flex-grow', '8');
+    if (savedSchedule != null) {
+        textInput.val(savedSchedule[i]);
+        scheduleItemsToSave = savedSchedule;
+    }
 
     var localSaveButton = $('<button type="button" >');
     localSaveButton.css('flex-grow', '2');
     localSaveButton.addClass('saveBtn');
-    
+
     var hour = hours[i];
     if (i < 3) {
         //creates AM timestamp list items
         spanTimeText.text(hour + periods[0]);
-        console.log(spanTimeText);
-    } else {
-        //creates PM timestamp list items
+        // console.log(spanTimeText);
+    } else if (i == 3) {
+        //creates 12PM timestamp list item
         spanTimeText.text(hour + periods[1]);
-        console.log(spanTimeText);
+    } else {
+        //creates the remaining PM timestamp list items
+        spanTimeText.text((hour - 12) + periods[1]);
+        // console.log(spanTimeText);
     }
+
+    //when input added add input to scheduleItems array
+    textInput.bind('keyup', function () {
+        scheduleItemsToSave[i] = (this.value);
+        // console.log(scheduleItemsToSave);
+    })
+
+    //create event listener for each save btn
+    localSaveButton.click(function () {
+        localStorage.setItem('hour', JSON.stringify(scheduleItemsToSave));
+        // console.log(scheduleItemsToSave);
+    });
+
+    //append information to windows screen
     li.append(spanTimeText);
     li.append(textInput);
     li.append(localSaveButton);
+    pastPresFut(i, textInput);
     ul.append(li);
-    
-}
-// WHEN I view the timeblocks for that day
-// THEN each timeblock is color coded to indicate whether it is in the past, present, or future
-function pastPresFut(li) {
 
 }
-// WHEN I click into a timeblock
-// THEN I can enter an event
-// WHEN I click the save button for that timeblock
-// THEN the text for that event is saved in local storage
 
-var buttons = Array.from($(".saveBtn"));
-// console.log(buttons);
-for(let i = 0; i< buttons.length; i++){
-    buttons[i].on('click', function(){
-        localStorage.set()
-    })
+
+//highlight textInput container based on time of day
+function pastPresFut(i, textInputSection) {
+    var currentHour = todaysDateHeader.get('hour');
+    // console.log(currentHour);
+    // console.log("i value = ", i);
+    // console.log('h[i] = ', hours[i]);
+    if (hours[i] < currentHour) {
+        textInputSection.addClass('past');
+    } else if (hours[i] == currentHour) {
+        textInputSection.addClass('present');
+    } else {
+        textInputSection.addClass('future');
+    }
+
 }
-
-
-// WHEN I refresh the page
-// THEN the saved events persist
