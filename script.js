@@ -1,9 +1,16 @@
 
 var ul = $('#timestamps');
 var scheduleItemsToSave = [];
-var todaysDateHeader = moment(); //calls out to the moment method to calculate and format dates/times
-$("#currentDay").text(todaysDateHeader.format("LLLL"));
-// console.log(todaysDateHeader);
+ //calls out to the moment method to calculate and format dates/times
+var todaysDateHeader = moment();
+
+
+function updateTime(){
+    
+    $("#currentDay").text(moment().format(' MMMM D, YYYY H:mm:ss'));
+    // console.log(todaysDateHeader);
+    setInterval(updateTime, 1000);
+};
 
 var hours = [9, 10, 11, 12, 13, 14, 15, 16, 17, 18];
 var periods = ['AM', 'PM'];
@@ -27,9 +34,10 @@ for (let i = 0; i < hours.length; i++) {
         scheduleItemsToSave = savedSchedule;
     }
 
-    var localSaveButton = $('<button type="button" >');
+    var localSaveButton = $('<button type="button">');
     localSaveButton.css('flex-grow', '2');
     localSaveButton.addClass('saveBtn');
+    localSaveButton.text('Save');
 
     var hour = hours[i];
     if (i < 3) {
@@ -82,3 +90,5 @@ function pastPresFut(i, textInputSection) {
     }
 
 }
+
+document.addEventListener('DOMContentLoaded', updateTime());
